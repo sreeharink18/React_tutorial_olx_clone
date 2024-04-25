@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import './Header.css';
 import OlxLogo from '../../assets/OlxLogo';
@@ -6,13 +6,22 @@ import Search from '../../assets/Search';
 import Arrow from '../../assets/Arrow';
 import SellButton from '../../assets/SellButton';
 import SellButtonPlus from '../../assets/SellButtonPlus';
+import { AuthContext, FirebaseContext } from '../../store/firebaseContext'
+import { Link, useNavigate } from 'react-router-dom';
+
 function Header() {
+  const { user } = useContext(AuthContext);
+  const { firebase } = useContext(FirebaseContext)
+  const navigate = useNavigate()
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
-        <div className="brandName">
-          <OlxLogo></OlxLogo>
-        </div>
+        <Link to='/'>
+          <div className="brandName">
+            <OlxLogo></OlxLogo>
+          </div>
+        </Link>
+
         <div className="placeSearch">
           <Search></Search>
           <input type="text" />
@@ -33,18 +42,27 @@ function Header() {
           <span> ENGLISH </span>
           <Arrow></Arrow>
         </div>
+        <Link to='/login' style={{ textDecoration: 'none', color: 'black', cursor: 'pointer' }}>
         <div className="loginPage">
-          <span>Login</span>
+          <span >{user ? user.displayName : "Login"}</span>
           <hr />
         </div>
-
-        <div className="sellMenu">
-          <SellButton></SellButton>
-          <div className="sellMenuContent">
-            <SellButtonPlus></SellButtonPlus>
-            <span>SELL</span>
+        </Link>
+        
+        <span onClick={() => {
+          firebase.auth().signOut();
+          navigate('/login')
+        }}>{user ? "logout" : ""}</span>
+        <Link to='/create'>
+          <div className="sellMenu">
+            <SellButton></SellButton>
+            <div className="sellMenuContent">
+              <SellButtonPlus></SellButtonPlus>
+              <span>SELL</span>
+            </div>
           </div>
-        </div>
+        </Link>
+
       </div>
     </div>
   );
